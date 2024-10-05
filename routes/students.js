@@ -1,75 +1,93 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-var students = [
-    { matricula: '20241000', nome: 'João Carlos', email: 'joao@exemplo.com', dataNascimento: '2000-03-15' },
-    { matricula: '24240102', nome: 'José Marinho', email: 'jose@exemplo.com', dataNascimento: '2000-05-24' },
-    { matricula: '24240301', nome: 'Luciana Fernandes', email: 'lucaina@exemplo.com', dataNascimento: '2001-05-15' }
-]
+let students = [
+  {
+    matricula: "20241000",
+    nome: "João Carlos",
+    email: "joao@exemplo.com",
+    dataNascimento: "2000-03-15",
+  },
+  {
+    matricula: "24240102",
+    nome: "José Marinho",
+    email: "jose@exemplo.com",
+    dataNascimento: "2000-05-24",
+  },
+  {
+    matricula: "24240301",
+    nome: "Luciana Fernandes",
+    email: "lucaina@exemplo.com",
+    dataNascimento: "2001-05-15",
+  },
+];
 
-/* GET students listing. */
-router.get('/', function(req, res, next) {
-  res.status(200).json({students});
+// Helper functions
+const findStudent = (matricula, email) =>
+  students.find((s) => s.matricula === matricula || s.email === email);
+
+const findStudentIndex = (matricula) =>
+  students.findIndex((s) => s.matricula === matricula);
+
+// GET students listing
+router.get("/", (req, res) => {
+  res.status(200).json({ students });
 });
 
-/* POST students listing. */
-router.post('/', function(req, res, next) {
-    const student = req.body
+// POST new student
+router.post("/", (req, res) => {
+  const student = req.body;
 
-    console.log({student})
+  if (!student || !student.matricula || !student.email) {
+    return res.status(400).json({ error: "Dados do aluno inválidos" });
+  }
 
-    const isStudentAdded = students.find(s => s.matricula === student.matricula || s.email === student.email)
+  if (findStudent(student.matricula, student.email)) {
+    return res.status(409).json({ error: "Aluno já cadastrado" });
+  }
 
-    if(isStudentAdded){
-        res.send("Student is registered in our system!")
-        return
-    }
-
-    if(student){
-        students.push(student)
-        res.render("success")
-        return
-    }
-  
+  students.push(student);
+  res
+    .status(201)
+    .render("success", { message: "Aluno cadastrado com sucesso!" });
 });
-/* PUT students listing. */
-router.put('/', function(req, res, next) {
-    const student = req.body
-    console.log("chegouu auqi")
 
-    const isStudentAdded = students.find(s => s.matricula === student.matricula || s.email === student.email)
+// PUT update student
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const updatedStudent = req.body;
 
-    if(!isStudentAdded){
-        return res.send("Aluno não encontrado!")
-    }
+  if (!updatedStudent || !updatedStudent.matricula || !updatedStudent.email) {
+    return res.status(400).json({ error: "Dados do aluno inválidos" });
+  }
 
-    const indexStudent = students.indexOf(s => s.matricula === student.matricula);
+  const studentIndex = findStudentIndex(id);
 
+  if (studentIndex === -1) {
+    return res.status(404).json({ error: "Aluno não encontrado" });
+  }
 
+  const existingStudent = findStudent(null, updatedStudent.email);
+  if (existingStudent && existingStudent.matricula !== id) {
+    return res.status(409).json({ error: "Email já em uso" });
+  }
 
-    try {
-        
-        students.splice(indexStudent, 1,student)
-        res.status(200)
-        
-    } catch (error) {
-        res.status(500).send("Error to delete student")
-    }
-
- 
+  students[studentIndex] = { ...students[studentIndex], ...updatedStudent };
+  res.render("success", { message: "Aluno atualizado com sucesso!" });
 });
-/* DELETE students listing. */
-router.delete('/:id', function(req, res, next) {
-    const {id} = req.params
 
+// DELETE student
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
 
-    try {
-        students.splice(id-1, 1)
-        res.status(200)
-        
-    } catch (error) {
-        res.status(500).send("Error to delete student")
-    }
+  const initialLength = students.length;
+  students = students.filter((s) => s.matricula !== id);
+
+  if (students.length === initialLength) {
+    return res.status(404).json({ error: "Aluno não encontrado" });
+  }
+
+  res.render("success", { message: "Aluno removido com sucesso!" });
 });
 
 module.exports = router;

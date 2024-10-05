@@ -16,37 +16,47 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     const student = req.body
 
+    console.log({student})
+
     const isStudentAdded = students.find(s => s.matricula === student.matricula || s.email === student.email)
 
     if(isStudentAdded){
-        console.log("ta por aqui!!")
         res.send("Student is registered in our system!")
         return
     }
 
     if(student){
         students.push(student)
-        res.status(201)
+        res.render("success")
         return
     }
-  res.send("no body received")
+  
 });
 /* PUT students listing. */
-router.put('/:id', function(req, res, next) {
-
-    const {id} = req.params
+router.put('/', function(req, res, next) {
     const student = req.body
+    console.log("chegouu auqi")
+
+    const isStudentAdded = students.find(s => s.matricula === student.matricula || s.email === student.email)
+
+    if(!isStudentAdded){
+        return res.send("Aluno não encontrado!")
+    }
+
+    const indexStudent = students.indexOf(s => s.matricula === student.matricula);
+
 
 
     try {
-        students.splice(id-1, 1,student)
+        
+        students.splice(indexStudent, 1,student)
         res.status(200)
         
     } catch (error) {
         res.status(500).send("Error to delete student")
     }
 
-  res.status(500);
+ 
 });
 /* DELETE students listing. */
 router.delete('/:id', function(req, res, next) {

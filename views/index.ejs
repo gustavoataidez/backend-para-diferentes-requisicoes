@@ -12,10 +12,81 @@
         button {
             margin: 10px 0;
         }
+        .card{
+         color: white;
+          display: flex;
+          flex-direction: column;
+          width:auto;
+          padding: 20px;
+          background-color: aquamarine;
+          height: auto;
+          border-radius: 16px;
+        }
     </style>
 </head>
 <body>
     <h1>Exemplo de Requisições para Registro de Alunos</h1>
+
+
+    <form action="/alunos" method="post" class="card" style="background-color: deepskyblue;">
+      <fieldset>
+          <legend>Cadastrar aluno:</legend>
+          <label for="matricula">Matricula:</label>
+          <input required type="text" id="matricula" name="matricula">
+
+
+          <label for="nome">Nome do Aluno:</label>
+          <input  required type="text" id="nome" name="nome">
+
+          <label for="dataNascimento">Nascimento (dd/mm/aaaa):</label>
+          <input required type="date" id="dataNascimento" name="dataNascimento">
+
+
+          <label for="email">E-Mail:</label>
+          <input required type="text" id="email" name="email">
+      </fieldset>
+
+      
+      
+
+      <div class="flex">
+          <button type="submit">Cadastrar</button>
+          <button type="reset">Limpar Campos</button>
+      </div>
+
+
+    </form>
+
+
+
+    <form action="/alunos" method=""  class="card" style="background-color: rgb(131, 78, 175);">
+      <fieldset>
+          <legend>Atualizar aluno:</legend>
+          <label for="matricula">Matricula:</label>
+          <input required type="text" id="matricula" name="matricula">
+
+
+          <label for="nome">Nome do Aluno:</label>
+          <input required type="text" id="nome" name="nome">
+
+          <label for="dataNascimento">Nascimento (dd/mm/aaaa):</label>
+          <input required type="date" id="dataNascimento" name="dataNascimento">
+
+
+          <label for="email">E-Mail:</label>
+          <input required type="text" id="email" name="email">
+      </fieldset>
+
+      
+      
+
+      <div class="flex">
+          <button type="submit">Atualizar</button>
+          <button type="reset">Limpar Campos</button>
+      </div>
+
+
+    </form>
 
     <button onclick="getAlunos()">Listar Alunos (GET)</button>
     <button onclick="registrarAluno()">Registrar Aluno (POST)</button>
@@ -35,6 +106,7 @@
 
         // Função para realizar uma requisição POST para registrar um novo aluno
         function registrarAluno() {
+          
             fetch('http://localhost:3000/alunos', {
                 method: 'POST',
                 headers: {
